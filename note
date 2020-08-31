@@ -1,0 +1,139 @@
+打开excel文件的时候 验证标题栏是不是和软件生成的一样
+
+刷新合同列表的时机~~~
+
+导出excel最好能打开新窗口  设置格式  预览
+
+新建和打开数据时提示已有数据 是否覆盖
+
+添加备注
+
+7种格式 ：
+    1 第一行 row_1_styles:宋体 18号 加粗 垂直居中 水平居中
+    2 第二行 row_2_styles:宋体 11号 加粗 垂直居中 水平居中
+    3 第三行 row_3_styles:宋体 10号 加粗 垂直居中 水平居中
+    4 合同数据 contract_styles:宋体 9号 垂直居中 水平居中 自动换行 背景色’00339966‘
+    5 合同备注数据 contract_comments_styles:宋体 9号 垂直居中 水平靠左 自动换行 背景色’00339966‘
+    6 付款信息 paid_info_styles:宋体 9号 垂直居中 水平居中 自动换行
+    7 付款说明和备注 paid_info_comments_styles:宋体 9号 垂直居中 水平靠左 自动换行
+
+self.data =
+{
+    '数据标题'：''
+    '合同列表'：
+        [
+            {
+                '合同编号':''
+                '合同名称'：''
+                '合同供应商'：''
+                '合同签订时间'：'YYYY/MM'
+                '合同总金额'：''
+                '合同已付金额'：''
+                '合同剩余金额':''
+                '合同已付款比例'：''
+                '合同付款明细'：
+                [
+                    {
+                        '付款说明':''
+                        '付款时间':'YYYY/MM'
+                        '付款金额':''
+                        '已付款':True/False
+                    }
+                    {
+                        '付款说明':''
+                        '付款时间':'YYYY/MM'
+                        '付款金额':''
+                        '已付款':True/False
+                    }
+                ]
+            }'
+            {
+                '合同编号':''
+                '合同标题'：''
+                '合同供应商'：''
+                '合同签订时间'：'YYYY/MM'
+                '合同总金额'：''
+                '合同已付金额'：''
+                '合同剩余金额':''
+                '合同已付款比例'：''
+                '合同付款明细'：
+                [
+                    1:
+                    {
+                        '付款说明':''
+                        '付款时间':'YYYY/MM'
+                        '付款金额':''
+                        '已付款':True/False
+                    }
+                    2:
+                    {
+                        '付款说明':''
+                        '付款时间':'YYYY/MM'
+                        '付款金额':''
+                        '已付款':True/False
+                    }
+                ]
+            }'
+        ]
+}
+
+new_data(self, event):  √
+open_data(self, event): √
+save_data(self, event):  √
+export_data(self, event):
+show_help(self, event):  √
+show_info(self, event):  √
+add_contract(self, event):  √
+remove_contract(self, event):
+contract_moveup(self, event):
+contract_movedown(self, event):
+load_contract(self, event):  √
+work_title_change(self, event):  √
+pay_enable(self, event):  √
+pay_money_changed(self, event):  √
+save_contract(self, event):  √
+
+
+
+
+class MyNumberValidator(wx.Validator):
+    def __init__(self):
+        wx.Validator.__init__(self)
+        self.ValidInput = ['.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+        self.StringLength = 0
+        self.Bind(wx.EVT_CHAR, self.OnCharChanged)  # 绑定字符改变事件
+
+    def OnCharChanged(self, event):
+        # 得到输入字符的ASCⅡ码
+        keycode = event.GetKeyCode()
+        # 退格键（ASCⅡ码 为 8），删除一个字符
+        if keycode == 8:
+            self.StringLength -= 1
+            # 时间继续传递
+            event.Skip()
+            return
+
+        # 把ASCⅡ码转换为字符
+        input_char = chr(keycode)
+
+        if input_char in self.ValidInput:
+            # 第一个字符为“.” 非法，拦截该事件，不会成功输入
+            if input_char == '.' and self.StringLength == 0:
+                return False
+            else:
+                event.Skip()
+                self.StringLength += 1
+                return True
+        return False
+
+    def Clone(self):
+        return MyNumberValidator()
+
+    def Validate(self, win):  # 1 使用验证器方法
+        return True
+
+    def TransferToWindow(self):
+        return True
+
+    def TransferFromWindow(self):
+        return True
